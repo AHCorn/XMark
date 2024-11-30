@@ -22,7 +22,6 @@
   
 <div align="center">
 
-<img width="646" alt="image" src="https://github.com/user-attachments/assets/22f2bfa8-644c-42e7-8e0a-132234a60787">
 
 </div>
 
