@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         X 收藏助手
 // @namespace    https://github.com/ahcorn/XMark
-// @version      0.1
+// @version      0.2
 // @license      GPL-3.0
 // @description  追踪页面内的红心推文，转存至脚本记录内。
 // @author       安和
@@ -32,6 +32,12 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             transition: all 0.3s ease;
             visibility: hidden;
+        }
+
+        #custom-panel, #export-panel {
+            width: 600px;
+            max-width: 90vw;
+            box-sizing: border-box;
         }
 
         #favorites-panel.show, #export-panel.show, #custom-panel.show {
@@ -133,7 +139,7 @@
             background: #192734;
             padding: 16px;
             border-radius: 12px;
-            margin: 20px 0 16px;
+            margin: -1px 0 16px;
             border: 1px solid #38444d;
             position: sticky;
             top: 60px;
@@ -327,13 +333,17 @@
 
         .tweet-image {
             width: 100%;
+            height: 200px;
             border-radius: 8px;
             object-fit: cover;
-            max-height: 200px;
             cursor: pointer;
             transition: opacity 0.2s ease;
+            position: relative;
+            background: linear-gradient(90deg, #192734 0%, #253341 50%, #192734 100%); 
+            background-size: 200% 100%; 
+            animation: shimmer 1.5s infinite;
         }
-
+        
         .tweet-image:hover {
             opacity: 0.9;
         }
@@ -376,7 +386,6 @@
             gap: 4px;
         }
 
-        /* 按钮样式 */
         .panel-button {
             background: #1d9bf0;
             color: white;
@@ -441,6 +450,7 @@
             justify-content: center;
             align-items: center;
         }
+        
 
         .lightbox-image {
             max-width: 100%;
@@ -449,6 +459,7 @@
             border-radius: 8px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         }
+        
 
         .lightbox-info-card {
             position: fixed;
@@ -463,7 +474,7 @@
             width: 300px;
             max-width: 90vw;
             z-index: 10003;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: none; 
             transform-origin: right bottom;
         }
 
@@ -597,12 +608,14 @@
             z-index: 10003;
         }
 
-        /* 导出面板样式 */
         .export-content {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
+
 
         .export-section {
             background: #192734;
@@ -675,17 +688,10 @@
         }
 
         .custom-code-editor {
+            box-sizing: border-box;
+            max-width: 100%;
+            min-width: 100%;
             width: 100%;
-            height: 200px;
-            background: #253341;
-            color: #fff;
-            border: 1px solid #38444d;
-            border-radius: 8px;
-            padding: 12px;
-            font-family: monospace;
-            resize: vertical;
-            margin-bottom: 12px;
-            line-height: 1.5;
         }
 
         .custom-code-logs {
@@ -724,6 +730,101 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+        
+        .tweet-image.loaded {
+            background: none;
+            animation: none;
+        }
+        
+        .loading-shimmer {
+            position: relative;
+            background: linear-gradient(90deg, #192734 0%, #253341 50%, #192734 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .lightbox-image-container {
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: linear-gradient(90deg, #192734 0%, #253341 50%, #192734 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        .lightbox-image-container.loaded {
+            background: none;
+            animation: none;
+        }
+        
+        .lightbox-info-card.minimized {
+            transform: scale(0.9);
+            opacity: 0.8;
+            padding: 12px;
+            width: auto;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+        
+        .lightbox-info-card.minimized:hover {
+            opacity: 1;
+            transform: scale(0.95);
+        }
+        
+        .lightbox-info-card.minimized .lightbox-info-text,
+        .lightbox-info-card.minimized .lightbox-info-stats,
+        .lightbox-info-card.minimized .lightbox-info-dates {
+            display: none;
+        }
+        
+        .lightbox-info-card.minimized .lightbox-info-author {
+            margin-bottom: 0;
+        }
+        
+        .tweet-image-container,
+        .lightbox-image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .tweet-image-container::before,
+        .lightbox-image-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, #192734 0%, #253341 50%, #192734 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            pointer-events: none;
+        }
+        
+        .tweet-image-container.loaded::before,
+        .lightbox-image-container.loaded::before {
+            display: none;
+        }
+        
     `);
     let favorites = GM_getValue('twitter_favorites', []);
     let processedTweets = new Set();
@@ -747,24 +848,34 @@
         close: '<svg viewBox="0 0 24 24"><g><path d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path></g></svg>',
         export: '<svg viewBox="0 0 24 24"><g><path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path></g></svg>'
     };
-
     function closeActivePanel() {
         if (activePanel) {
             const panel = activePanel;
-            if (activeOverlay) {
-                activeOverlay.classList.remove('show');
-                activeOverlay.style.display = 'none';
-            }
+            const overlay = activeOverlay;
+            const isPanelFavorites = panel.id === 'favorites-panel';
+
             panel.classList.remove('show');
-            panel.style.display = 'none';
-            if (panel.id === 'favorites-panel') {
-                panel.style.display = '';
+            if (overlay) {
+                overlay.classList.remove('show');
             }
-            activePanel = null;
-            activeOverlay = null;
+
+            setTimeout(() => {
+                if (!isPanelFavorites) {
+                    panel.remove();
+                }
+                if (overlay) {
+                    overlay.remove();
+                }
+
+                if (activePanel === panel) {
+                    activePanel = null;
+                }
+                if (activeOverlay === overlay) {
+                    activeOverlay = null;
+                }
+            }, 300);
         }
     }
-
     function parseTwitterDate(timeElement) {
         try {
             const datetime = timeElement.getAttribute('datetime');
@@ -898,29 +1009,34 @@
         }
     }
 
-    function executeCustomCode(tweet) {
-        if (!customCode) return;
+function executeCustomCode(tweet) {
+    if (!customCode) return;
 
-        try {
-            const func = new Function('tweet', customCode);
-            const result = func(tweet);
-
+    try {
+        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        const func = new AsyncFunction('tweet', customCode);
+        func(tweet).then(result => {
             const timestamp = new Date().toLocaleTimeString();
             customCodeLogs.unshift(`[${timestamp}] 执行成功: ${JSON.stringify(result)}`);
-
-            if (customCodeLogs.length > 100) {
-                customCodeLogs.pop();
-            }
-
-            const logsContainer = document.querySelector('.custom-code-logs');
-            if (logsContainer) {
-                updateCustomCodeLogs();
-            }
-        } catch (error) {
+        }).catch(error => {
             console.error('自定义代码执行错误:', error);
             customCodeLogs.unshift(`[${new Date().toLocaleTimeString()}] 执行错误: ${error.message}`);
+        });
+
+        if (customCodeLogs.length > 100) {
+            customCodeLogs.pop();
         }
+
+        const logsContainer = document.querySelector('.custom-code-logs');
+        if (logsContainer) {
+            updateCustomCodeLogs();
+        }
+    } catch (error) {
+        console.error('自定义代码执行错误:', error);
+        customCodeLogs.unshift(`[${new Date().toLocaleTimeString()}] 执行错误: ${error.message}`);
     }
+}
+
 
     function updateCustomCodeLogs() {
         const logsContainer = document.querySelector('.custom-code-logs');
@@ -949,14 +1065,14 @@
             if (parts.length < 2) return { author: fullText.trim(), handle: '' };
 
             const userPart = parts[0].trim();
-            const nameParts = userPart.split('@');
+            const atIndex = userPart.lastIndexOf('@');
 
             let author = userPart;
             let handle = '';
 
-            if (nameParts.length >= 2) {
-                author = nameParts[0].trim();
-                handle = nameParts[1].trim();
+            if (atIndex !== -1) {
+                author = userPart.substring(0, atIndex).trim();
+                handle = userPart.substring(atIndex + 1).trim();
             }
 
             if (!handle) {
@@ -975,6 +1091,7 @@
             return { author: 'Unknown', handle: '' };
         }
     }
+
 
     async function downloadCurrentImage() {
         try {
@@ -1021,31 +1138,32 @@
                 imageRect.bottom < expandedInfoRect.top ||
                 imageRect.top > expandedInfoRect.bottom);
     }
-
     function createLightbox(imageInfo, startIndex) {
         if (activeLightbox) {
             activeLightbox.remove();
         }
-
+    
         const lightbox = document.createElement('div');
         lightbox.className = 'lightbox';
         currentLightboxIndex = startIndex;
         currentLightboxImages = allImages;
         currentImageInfo = imageInfo;
         activeLightbox = lightbox;
-
+    
         function updateLightboxContent() {
             const currentImage = currentLightboxImages[currentLightboxIndex];
             const info = currentImage.info;
-
+    
             lightbox.innerHTML = `
                 <div class="lightbox-content">
                     <button class="lightbox-close" title="关闭">${TWITTER_ICONS.close}</button>
-                    <img src="${cleanImageUrl(currentImage.url)}" class="lightbox-image" alt="图片">
+                    <div class="lightbox-image-container">
+                        <img src="${cleanImageUrl(currentImage.url)}" class="lightbox-image" alt="图片">
+                    </div>
                     <button class="lightbox-nav lightbox-prev" title="上一张"><span>&lt;</span></button>
                     <button class="lightbox-nav lightbox-next" title="下一张"><span>&gt;</span></button>
                     <div class="lightbox-counter">${currentLightboxIndex + 1} / ${currentLightboxImages.length}</div>
-                    <div class="lightbox-info-card">
+                    <div class="lightbox-info-card minimized">
                         <div class="lightbox-info-author">
                             <img src="${info.authorAvatar}" class="tweet-avatar" style="width: 24px; height: 24px;">
                             <div>
@@ -1079,24 +1197,45 @@
                     </div>
                 </div>
             `;
-
+    
             const infoCard = lightbox.querySelector('.lightbox-info-card');
+            const imageContainer = lightbox.querySelector('.lightbox-image-container');
             const image = lightbox.querySelector('.lightbox-image');
-
+    
+            imageContainer.classList.add('loading-shimmer');
+            
+            image.onload = () => {
+                imageContainer.classList.remove('loading-shimmer');
+                checkOverlap();
+            };
+    
             function checkOverlap() {
                 const imageRect = image.getBoundingClientRect();
                 const infoCardRect = infoCard.getBoundingClientRect();
-
+    
                 if (checkImageOverlap(imageRect, infoCardRect)) {
                     infoCard.classList.add('minimized');
-                } else {
-                    infoCard.classList.remove('minimized');
                 }
             }
-
-            image.onload = checkOverlap;
-            window.addEventListener('resize', checkOverlap);
-
+    
+            function toggleInfoCard(animate) {
+                if (animate) {
+                    infoCard.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                } else {
+                    infoCard.style.transition = 'none';
+                }
+                infoCard.classList.toggle('minimized');
+            }
+    
+            infoCard.addEventListener('click', (e) => {
+                if (infoCard.classList.contains('minimized')) {
+                    requestAnimationFrame(() => {
+                        toggleInfoCard(true);
+                    });
+                    e.stopPropagation();
+                }
+            });
+    
             lightbox.querySelector('.lightbox-close').onclick = () => {
                 lightbox.classList.remove('show');
                 setTimeout(() => {
@@ -1105,34 +1244,29 @@
                     window.removeEventListener('resize', checkOverlap);
                 }, 300);
             };
-
+    
             lightbox.querySelector('.lightbox-prev').onclick = () => {
                 currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
                 updateLightboxContent();
             };
-
+    
             lightbox.querySelector('.lightbox-next').onclick = () => {
                 currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
                 updateLightboxContent();
             };
-
-            infoCard.addEventListener('click', (e) => {
-                if (infoCard.classList.contains('minimized')) {
-                    infoCard.classList.remove('minimized');
-                    e.stopPropagation();
-                }
-            });
+    
+            window.addEventListener('resize', checkOverlap);
         }
-
+    
         document.body.appendChild(lightbox);
         requestAnimationFrame(() => {
             lightbox.classList.add('show');
             updateLightboxContent();
         });
-
+    
         function handleKeyboard(e) {
             if (!activeLightbox) return;
-
+    
             if (e.key === 'Escape') {
                 lightbox.querySelector('.lightbox-close').click();
             }
@@ -1141,15 +1275,19 @@
             if (e.key === 'Enter') downloadCurrentImage();
             if (e.key === 'i' || e.key === 'I') {
                 const infoCard = lightbox.querySelector('.lightbox-info-card');
-                infoCard.classList.toggle('minimized');
+                requestAnimationFrame(() => {
+                    toggleInfoCard(true);
+                });
+                e.preventDefault();
             }
         }
-
+    
         document.addEventListener('keydown', handleKeyboard);
         lightbox.addEventListener('remove', () => {
             document.removeEventListener('keydown', handleKeyboard);
         });
     }
+    
 
     async function downloadImages(favorites) {
         const totalImages = favorites.reduce((count, tweet) => count + (tweet.images?.length || 0), 0);
@@ -1208,6 +1346,9 @@
     function createExportPanel() {
         const panel = document.createElement('div');
         panel.id = 'export-panel';
+        const prevPanel = activePanel;
+        const prevOverlay = activeOverlay;
+
         activePanel = panel;
 
         panel.innerHTML = `
@@ -1269,25 +1410,19 @@
         });
 
         overlay.addEventListener('click', () => {
-            panel.classList.remove('show');
-            overlay.classList.remove('show');
-            setTimeout(() => {
-                panel.remove();
-                overlay.remove();
-                activePanel = null;
-                activeOverlay = null;
-            }, 300);
+            closeActivePanel();
+            if (prevPanel && prevPanel.id === 'favorites-panel') {
+                activePanel = prevPanel;
+                activeOverlay = prevOverlay;
+            }
         });
 
         document.getElementById('close-export-panel').addEventListener('click', () => {
-            panel.classList.remove('show');
-            overlay.classList.remove('show');
-            setTimeout(() => {
-                panel.remove();
-                overlay.remove();
-                activePanel = null;
-                activeOverlay = null;
-            }, 300);
+            closeActivePanel();
+            if (prevPanel && prevPanel.id === 'favorites-panel') {
+                activePanel = prevPanel;
+                activeOverlay = prevOverlay;
+            }
         });
 
         document.getElementById('copy-to-clipboard').addEventListener('click', () => {
@@ -1311,11 +1446,11 @@
                 if (includeFavoriteDate) parts.push(`收藏时间: ${formatDate(tweet.favoriteDate)}`);
                 if (includeStats) {
                     parts.push(`互动数据:
-回复: ${formatNumber(tweet.stats.replies)}
-转发: ${formatNumber(tweet.stats.retweets)}
-喜欢: ${formatNumber(tweet.stats.likes)}
-查看: ${formatNumber(tweet.stats.views)}
-书签: ${formatNumber(tweet.stats.bookmarks)}`);
+    回复: ${formatNumber(tweet.stats.replies)}
+    转发: ${formatNumber(tweet.stats.retweets)}
+    喜欢: ${formatNumber(tweet.stats.likes)}
+    查看: ${formatNumber(tweet.stats.views)}
+    书签: ${formatNumber(tweet.stats.bookmarks)}`);
                 }
                 return parts.join('\n');
             }).join('\n\n---\n\n');
@@ -1332,9 +1467,13 @@
         return panel;
     }
 
+
     function createCustomPanel() {
         const panel = document.createElement('div');
         panel.id = 'custom-panel';
+        const prevPanel = activePanel;
+        const prevOverlay = activeOverlay;
+
         activePanel = panel;
 
         panel.innerHTML = `
@@ -1352,12 +1491,12 @@
                     可以通过 tweet 参数访问推文的所有信息。
                 </p>
                 <textarea class="custom-code-editor" placeholder="输入自定义JavaScript代码...
-例如:
-// tweet 参数包含推文的所有信息
-console.log(tweet);
-// 返回值会显示在日志中
-return '处理完成';
-">${customCode}</textarea>
+    例如:
+    // tweet 参数包含推文的所有信息
+    console.log(tweet);
+    // 返回值会显示在日志中
+    return '处理完成';
+    ">${customCode}</textarea>
                 <button class="panel-button" id="save-custom-code">保存代码</button>
             </div>
             <div class="export-section">
@@ -1377,8 +1516,21 @@ return '处理完成';
             panel.classList.add('show');
         });
 
-        overlay.addEventListener('click', () => closeActivePanel());
-        document.getElementById('close-custom-panel').addEventListener('click', () => closeActivePanel());
+        overlay.addEventListener('click', () => {
+            closeActivePanel();
+            if (prevPanel && prevPanel.id === 'favorites-panel') {
+                activePanel = prevPanel;
+                activeOverlay = prevOverlay;
+            }
+        });
+
+        document.getElementById('close-custom-panel').addEventListener('click', () => {
+            closeActivePanel();
+            if (prevPanel && prevPanel.id === 'favorites-panel') {
+                activePanel = prevPanel;
+                activeOverlay = prevOverlay;
+            }
+        });
 
         document.getElementById('save-custom-code').addEventListener('click', () => {
             const code = document.querySelector('.custom-code-editor').value;
@@ -1391,6 +1543,7 @@ return '处理完成';
 
         return panel;
     }
+
     function setupSearchAndFilter(container) {
         const filterSection = container.querySelector('.filter-section');
         filterSection.innerHTML = `
@@ -1775,6 +1928,22 @@ return '处理完成';
             }
         });
     }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeActivePanel();
+        }
+        if (e.key === 'f' || e.key === 'F') {
+            const panel = document.getElementById('favorites-panel');
+            if (!panel || !panel.classList.contains('show')) {
+                createPanel();
+            } else {
+                closeActivePanel();
+            }
+            e.preventDefault();
+        }
+    });
+
 
     function init() {
         GM_registerMenuCommand('打开面板', () => {
